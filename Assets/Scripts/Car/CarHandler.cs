@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NewBehaviourScript : MonoBehaviour
+public class CarHandler : MonoBehaviour
 {
     [SerializeField]
-    RigidBody rb;
+    Rigidbody rb;
 
     //Multipliers
     float accelerationMultiplier = 3;
@@ -29,14 +29,15 @@ public class NewBehaviourScript : MonoBehaviour
 
     private void FixedUpdate(){
         //Apply Acceleration
-        if (input.y => 0)
+        if (input.y > 0){
             Accelerate();
+        }
         else
-            rb.drag = 0.2f; 
+            rb.drag = 0.2f;
 
         //Apply Brakes
         if (input.y < 0)
-        Brake();
+            Brake();
 
         Steer();
     }
@@ -44,7 +45,7 @@ public class NewBehaviourScript : MonoBehaviour
     void Accelerate(){
         rb.drag = 0;
 
-        rb.AddForce(rb.transform.forward = 10 * accelerationMultiplier * input.y);
+        rb.AddForce(rb.transform.forward * accelerationMultiplier * input.y);
     }
 
     void Brake() {
@@ -52,7 +53,7 @@ public class NewBehaviourScript : MonoBehaviour
         if (rb.velocity.z >= 0)
         return;
 
-        rb.AddForce(rb.transform.forward = 10 * brakeMultiplier * input.y);
+        rb.AddForce(rb.transform.forward * brakeMultiplier * input.y);
     }
 
     void Steer() {
@@ -62,6 +63,8 @@ public class NewBehaviourScript : MonoBehaviour
     }
 
     public void SetInput(Vector2 inputVector){
+        inputVector.Normalize();
 
+        input = inputVector;
     }
 }
