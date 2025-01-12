@@ -10,35 +10,46 @@ public class PlayerController : MonoBehaviour
 {
     public float speed = 1.0f;
 
-    private Rigidbody rb;
+    //public AudioClip collectSound;
+    //public AudioClip deathSound;
 
-    private float movementX;
-    private float movementY;
+    //public AudioSource backgroundMusic;
+    //public TextMeshProUGUI countText;
+    public TextMeshProUGUI winLooseText;
+
+    private Rigidbody rb;
+    //private AudioSource audioSource;
+
+    //private int count = 0;
+    //private int maxCount = 0;
 
 
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        //audioSource = GetComponent<AudioSource>();
 
+        //maxCount = GameObject.FindGameObjectsWithTag("Diamond").Length;
+        //SetCountText();
     }
 
-    private void OnMove(InputValue movementValue)
+    private void OnTriggerEnter(Collider other)
     {
-        Vector2 movementVector = movementValue.Get<Vector2>();
+       
 
-        movementX = movementVector.x;
-        movementY = movementVector.y;
+        if (other.gameObject.CompareTag("tree"))
+        {
+            //audioSource.PlayOneShot(deathSound);
+            //backgroundMusic.Stop();
+            rb.isKinematic = true;
+
+            winLooseText.text = "Oh no! I ran into a tree and died.";
+            winLooseText.color = Color.red;
+
+            //Invoke(nameof(BackToMenu), 5f);
+        }
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        Vector3 direction = new Vector3(movementX, 0, movementY);
-
-        rb.AddForce(direction * speed);
-    }
-
 
     private void BackToMenu()
     {
