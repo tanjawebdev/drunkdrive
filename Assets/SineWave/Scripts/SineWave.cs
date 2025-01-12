@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 public class SineWave : MonoBehaviour
 {
@@ -7,6 +8,9 @@ public class SineWave : MonoBehaviour
     // Shader and Material
     public Shader SineWaveShader;
     private Material mat;
+
+    //reference drunk level text
+    public Text Drunk_Level_Text;
 
     // Drunkenness variables
     public float drunk_level = 1f; // Current drunk level
@@ -90,7 +94,7 @@ public class SineWave : MonoBehaviour
         HorizontalOffset = 0f;
         VerticalOffset = 0f;
         Amplitude = 0.1f;
-        Frequency = 60f;
+        Frequency = 25f;
     }
 
     void Update()
@@ -121,6 +125,8 @@ public class SineWave : MonoBehaviour
 
         // Optional: Add a subtle vertical wobble for extra effect
         VerticalOffset = Mathf.Cos(drunkPhase * 0.7f) * drunk_level * 0.05f;
+
+        Drunk_Level_Text.text = drunk_level.ToString("F2");
     }
 
     void OnRenderImage(RenderTexture src, RenderTexture dest)
