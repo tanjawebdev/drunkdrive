@@ -1,5 +1,10 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scenes/terrainnew.unity.meta
 guid: 92c3c629e19a048d1b8f49c8eb6e3142
+========
+guid: 45832c69499849db950dad714d8c3120
+folderAsset: yes
+>>>>>>>> low_resolution_texture:Assets/ProceduralTerrainPainter/Runtime/Modifiers.meta
 DefaultImporter:
   externalObjects: {}
   userData: 
