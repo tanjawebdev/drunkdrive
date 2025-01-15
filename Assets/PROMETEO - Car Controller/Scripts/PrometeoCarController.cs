@@ -14,13 +14,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using extOSC;
 
 public class PrometeoCarController : MonoBehaviour
 {
+    // Add these fields at the top of the script
+    [SerializeField] private OSCReceiver _oscReceiver; // OSC Receiver for ZigSim
+    [SerializeField] private float steeringSensitivity = 0.05f; // Lower values reduce sensitivity
+    private float gyroDeadZone = 0.15f; 
+
+    private float compassHeading; // Current compass heading
+    private float gyroZ; // Gyroscope Z-axis angular velocity
+    private float steeringAngle; // Calculated steering angle based on ZigSim data
+    private float previousCompassHeading; // To calculate delta from the compass
+    private float initialCompassHeading; // To store the initial compass heading
+    private float gyroCalibrationOffset; // To store the initial gyro offset
 
     //CAR SETUP
 
-      [Space(20)]
+    [Space(20)]
       //[Header("CAR SETUP")]
       [Space(10)]
       [Range(20, 190)]
@@ -33,7 +45,7 @@ public class PrometeoCarController : MonoBehaviour
       [Range(10, 45)]
       public int maxSteeringAngle = 27; // The maximum angle that the tires can reach while rotating the steering wheel.
       [Range(0.1f, 1f)]
-      public float steeringSpeed = 0.5f; // How fast the steering wheel turns.
+      public float steeringSpeed = 0.2f; // How fast the steering wheel turns.
       [Space(10)]
       [Range(100, 600)]
       public int brakeForce = 350; // The strength of the wheel brakes.
@@ -261,6 +273,22 @@ public class PrometeoCarController : MonoBehaviour
           }
         }
 
+        if (_oscReceiver == null)
+        {
+            _oscReceiver = GetComponent<OSCReceiver>();
+            Debug.Log("OSC Receiver assigned via script.");
+        }
+
+
+        if (_oscReceiver != null)
+        {
+            _oscReceiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleCompassMessage);
+            _oscReceiver.Bind("/ZIGSIM/tanjasPhone/gyro", HandleGyroMessage);
+        }
+
+        // Delay calibration by 0.5 seconds
+        Invoke(nameof(CalibrateSteering), 0.5f);
+
     }
 
     // Update is called once per frame
@@ -372,9 +400,42 @@ public class PrometeoCarController : MonoBehaviour
             RestartGame();
         }
 
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            initialCompassHeading = compassHeading; // Reset the compass calibration
+            gyroCalibrationOffset = gyroZ;         // Reset the gyro calibration
+            Debug.Log("Steering recalibrated.");
+        }
 
-      // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.
-      AnimateWheelMeshes();
+        Debug.Log($"Compass: {compassHeading}, Gyro Z: {gyroZ}, Steering: {steeringAngle}");
+
+        // Adjust the steering angle using calibrated gyroscope data
+        if (Mathf.Abs(gyroZ) > gyroDeadZone)
+        {
+            // Only adjust steering when gyroZ is outside the dead zone
+            steeringAngle += (-gyroZ * steeringSensitivity) * Time.deltaTime * 2f;
+        }
+        else
+        {
+            // Smoothly reset steering angle to zero when gyroZ is in the dead zone
+            steeringAngle = Mathf.Lerp(steeringAngle, 0, Time.deltaTime * steeringSpeed);
+        }
+
+        // Smoothly adjust steering angle
+        steeringAngle = Mathf.Lerp(steeringAngle, steeringAngle + (-gyroZ * steeringSensitivity), Time.deltaTime * steeringSpeed);
+
+        // Clamp the steering angle to the maximum steering range
+        steeringAngle = Mathf.Clamp(steeringAngle, -maxSteeringAngle, maxSteeringAngle);
+
+        // Apply the calculated steering angle to the front wheel colliders
+        frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
+        frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
+
+
+        // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.
+        AnimateWheelMeshes();
+
+
 
     }
 
@@ -383,6 +444,13 @@ public class PrometeoCarController : MonoBehaviour
     {
         // Get the active scene and reload it
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void CalibrateSteering()
+    {
+        initialCompassHeading = compassHeading; // Set initial compass heading
+        gyroCalibrationOffset = gyroZ;          // Set initial gyro offset
+        Debug.Log("Steering calibration completed.");
     }
 
     // This method converts the car speed data from float to string, and then set the text of the UI carSpeedText with this value.
@@ -397,6 +465,36 @@ public class PrometeoCarController : MonoBehaviour
           }
       }
 
+    }
+
+    private void HandleCompassMessage(OSCMessage message)
+    {
+        if (message.ToFloat(out float value))
+        {
+            compassHeading = value; // Update current compass heading
+                                    // Calculate delta for smooth adjustment (handles compass wraparound at 0°/360°)
+            float adjustedHeading = Mathf.DeltaAngle(initialCompassHeading, compassHeading);
+            steeringAngle += -adjustedHeading; // Invert if necessary
+            previousCompassHeading = compassHeading;
+        }
+    }
+
+    private void HandleGyroMessage(OSCMessage message)
+    {
+        if (message.ToVector3(out Vector3 gyroData))
+        {
+            float adjustedGyroZ = gyroData.z - gyroCalibrationOffset;
+
+            // Ignore small movements within the dead zone
+            if (Mathf.Abs(adjustedGyroZ) > gyroDeadZone)
+            {
+                gyroZ = adjustedGyroZ;
+            }
+            else
+            {
+                gyroZ = 0;
+            }
+        }
     }
 
     // This method controls the car sounds. For example, the car engine will sound slow when the car speed is low because the
