@@ -1208,6 +1208,7 @@ GameObject:
   - component: {fileID: 1257099713}
   - component: {fileID: 1257099716}
   - component: {fileID: 1257099717}
+  - component: {fileID: 1257099718}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1323,6 +1324,25 @@ MonoBehaviour:
   drunkIncreaseSpeed: 2
   baseOscillationSpeed: 1
   oscillationSpeedMultiplier: 0.5
+--- !u!114 &1257099718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257099712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 350a5426966174e7da736fb387400ebd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bumpIntensity: 0.1
+  bumpFrequency: 5
+  momentumSmoothness: 0.1
+  momentumDamping: 0.9
+  usePerlinNoise: 1
+  noiseScale: 1
+  noiseSpeed: 1
 --- !u!1 &1280786824
 GameObject:
   m_ObjectHideFlags: 0
