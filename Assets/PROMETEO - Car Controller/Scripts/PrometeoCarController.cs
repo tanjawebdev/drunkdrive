@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class PrometeoCarController : MonoBehaviour
 {
@@ -365,10 +366,23 @@ public class PrometeoCarController : MonoBehaviour
 
       }
 
+      // Check if the R key is pressed
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            RestartGame();
+        }
+
 
       // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.
       AnimateWheelMeshes();
 
+    }
+
+    // Method to restart the game
+    void RestartGame()
+    {
+        // Get the active scene and reload it
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     // This method converts the car speed data from float to string, and then set the text of the UI carSpeedText with this value.
