@@ -1194,7 +1194,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 627556911, guid: 79d0ca8b77e301442afdb49f102e8aed, type: 3}
       propertyPath: maxSpeed
-      value: 80
+      value: 60
       objectReference: {fileID: 0}
     - target: {fileID: 627556911, guid: 79d0ca8b77e301442afdb49f102e8aed, type: 3}
       propertyPath: useSounds
@@ -1424,6 +1424,7 @@ GameObject:
   - component: {fileID: 1257099714}
   - component: {fileID: 1257099713}
   - component: {fileID: 1257099716}
+  - component: {fileID: 1257099719}
   - component: {fileID: 1257099717}
   - component: {fileID: 1257099718}
   m_Layer: 0
@@ -1532,6 +1533,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be76b3099f48542adb03c21f7919208b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _oscReceiver: {fileID: 1257099719}
   SineWaveShader: {fileID: 4800000, guid: 16ca3aa75b0734d6fb078f7348a8c774, type: 3}
   Drunk_Level_Text: {fileID: 1775506081}
   drunk_level: 1
@@ -1539,6 +1541,7 @@ MonoBehaviour:
   drunkBumpAmount: 1
   drunkMinLevel: 0
   drunkIncreaseSpeed: 2
+  drunkMaxLevel: 3
   baseOscillationSpeed: 1
   oscillationSpeedMultiplier: 0.5
 --- !u!114 &1257099718
@@ -1560,6 +1563,25 @@ MonoBehaviour:
   usePerlinNoise: 1
   noiseScale: 1
   noiseSpeed: 1
+--- !u!114 &1257099719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1257099712}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fbba286dc10e549b2bdec947ef8dbd3b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _autoConnect: 1
+  _closeOnPause: 0
+  _mapBundle: {fileID: 0}
+  _workInEditor: 0
+  _localHostMode: 0
+  _localHost: 192.168.1.159
+  _localPort: 7002
 --- !u!1 &1280786824
 GameObject:
   m_ObjectHideFlags: 0
