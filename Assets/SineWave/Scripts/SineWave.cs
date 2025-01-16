@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using extOSC;
 
 public class SineWave : MonoBehaviour
 {
     #region Variables
+    [SerializeField] private OSCReceiver _oscReceiver; // OSC Receiver for ZigSim
 
     // Shader and Material
     public Shader SineWaveShader;
@@ -16,10 +18,13 @@ public class SineWave : MonoBehaviour
     public float drunk_level = 1f; // Current drunk level
     private float target_drunk_level = 1f; // Target drunk level
     private float drunkPhase = 0f; // Phase for oscillation
-    public float drunkDecayRate = 0.1f; // How quickly the drunk level decreases over time
+    public float drunkDecayRate = 0.2f; // How quickly the drunk level decreases over time
     public float drunkBumpAmount = 1f; // How much to increase the target drunk level when P is pressed
     public float drunkMinLevel = 0f; // Minimum value for drunk_level
     public float drunkIncreaseSpeed = 2f; // Speed at which drunk_level interpolates to target_drunk_level
+    public float drunkMaxLevel = 3f; // or whatever upper limit you want
+    private float bottleAngle = 0f;
+    private float bottle_tilt;
 
     private bool _XAxis;
     public bool XAxis
@@ -95,6 +100,8 @@ public class SineWave : MonoBehaviour
         VerticalOffset = 0f;
         Amplitude = 0.1f;
         Frequency = 25f;
+
+        _oscReceiver.Bind("/ZIGSIM/tanjasPhone/gravity", HandleGravityMessage);
     }
 
     void Update()
@@ -103,10 +110,20 @@ public class SineWave : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.P))
         {
             target_drunk_level += drunkBumpAmount;
+            target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
+        }
+
+        // help was soll man für einen sensor nehmen?
+        if (bottle_tilt >= -0.5f)
+        {
+            target_drunk_level += drunkBumpAmount * 0.01f;
+            target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
         }
 
         // Gradually interpolate drunk_level toward target_drunk_level
         drunk_level = Mathf.Lerp(drunk_level, target_drunk_level, Time.deltaTime * drunkIncreaseSpeed);
+
+        drunk_level = Mathf.Clamp(drunk_level, drunkMinLevel, drunkMaxLevel);
 
         // Gradually decrease the target drunk_level over time
         target_drunk_level = Mathf.Max(target_drunk_level - (drunkDecayRate * Time.deltaTime), drunkMinLevel);
@@ -127,6 +144,12 @@ public class SineWave : MonoBehaviour
         VerticalOffset = Mathf.Cos(drunkPhase * 0.7f) * drunk_level * 0.05f;
 
         Drunk_Level_Text.text = drunk_level.ToString("F2");
+
+    }
+
+    private void HandleGravityMessage(OSCMessage message)
+    {
+        bottle_tilt = message.Values[1].FloatValue;
     }
 
     void OnRenderImage(RenderTexture src, RenderTexture dest)

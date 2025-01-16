@@ -271,7 +271,6 @@ public class PrometeoCarController : MonoBehaviour
         if (_oscReceiver == null)
         {
             _oscReceiver = GetComponent<OSCReceiver>();
-            Debug.Log("OSC Receiver assigned via script.");
         }
 
 
@@ -332,18 +331,13 @@ public class PrometeoCarController : MonoBehaviour
         steeringAngle = targetSteeringAngle * (-1);
         carSpeed = carSpeed - Math.Abs(steeringAngle);
 
-        Debug.Log($"Compass: {compassHeading}, Steering_after_Lerp: {steeringAngle}");
-        Debug.Log($"SPEED !!!: {carSpeed}");
-
-
+        //Debug.Log($"SPEED !!!: {carSpeed}");
         // Apply the calculated steering angle to the wheel colliders
         frontLeftCollider.steerAngle = steeringAngle;
         frontRightCollider.steerAngle = steeringAngle;
 
-        Debug.Log($"Compass Heading: {compassHeading}, Steering Angle: {steeringAngle}");
+        //Debug.Log($"Compass Heading: {compassHeading}, Steering Angle: {steeringAngle}");
 
-        // Debug output to monitor the steering angle
-        Debug.Log($"Smoothed Steering Angle: {steeringAngle}");
 
         
 
@@ -543,7 +537,6 @@ public class PrometeoCarController : MonoBehaviour
         steeringAxis = -1f;
       }
       var steeringAngle = steeringAxis * maxSteeringAngle;
-        Debug.Log($"steeringAngle LEFT: {steeringAngle}");
       frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
@@ -555,7 +548,6 @@ public class PrometeoCarController : MonoBehaviour
         steeringAxis = 1f;
       }
       var steeringAngle = steeringAxis * maxSteeringAngle;
-        Debug.Log($"steeringAngle RIGHT: {steeringAngle}");
         frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
@@ -659,8 +651,6 @@ public class PrometeoCarController : MonoBehaviour
           rearLeftCollider.motorTorque = 0;
     			rearRightCollider.motorTorque = 0;
     		}
-
-            Debug.Log(frontLeftCollider.motorTorque);
       }
     }
 
