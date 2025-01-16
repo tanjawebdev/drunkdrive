@@ -4,6 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using extOSC;
+using static UnityEngine.Rendering.DebugUI;
 
 
 public class PlayerController : MonoBehaviour
@@ -18,6 +20,8 @@ public class PlayerController : MonoBehaviour
     public TextMeshProUGUI winLooseText;
 
     private Rigidbody rb;
+    [SerializeField] private OSCReceiver _receiver;
+
     //private AudioSource audioSource;
 
     //private int count = 0;
@@ -28,10 +32,22 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        if (_receiver != null)
+        {
+            _receiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleMessage);
+        }
         //audioSource = GetComponent<AudioSource>();
 
         //maxCount = GameObject.FindGameObjectsWithTag("Diamond").Length;
         //SetCountText();
+    }
+
+    private void HandleMessage(OSCMessage message)
+    {
+        if (message.ToFloat(out float value))
+        {
+            Debug.Log($"Received value: {value}");
+        }
     }
 
     private void OnTriggerEnter(Collider other)

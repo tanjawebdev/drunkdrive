@@ -14,13 +14,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using extOSC;
 
 public class PrometeoCarController : MonoBehaviour
 {
+    [SerializeField] private OSCReceiver _oscReceiver; // OSC Receiver for ZigSim
+    [SerializeField] private float steeringSensitivity = 1f; // Adjust sensitivity to control responsiveness
+
+    private float compassHeading; // Current compass heading
+    private float initialCompassHeading; // Initial compass value for calibration
+    private float steeringAngle; // Calculated steering angle based on compass data
 
     //CAR SETUP
 
-      [Space(20)]
+    [Space(20)]
       //[Header("CAR SETUP")]
       [Space(10)]
       [Range(20, 190)]
@@ -28,12 +35,12 @@ public class PrometeoCarController : MonoBehaviour
       [Range(10, 120)]
       public int maxReverseSpeed = 45; //The maximum speed that the car can reach while going on reverse in km/h.
       [Range(1, 10)]
-      public int accelerationMultiplier = 2; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
+      public float accelerationMultiplier = 2; // How fast the car can accelerate. 1 is a slow acceleration and 10 is the fastest.
       [Space(10)]
       [Range(10, 45)]
       public int maxSteeringAngle = 27; // The maximum angle that the tires can reach while rotating the steering wheel.
       [Range(0.1f, 1f)]
-      public float steeringSpeed = 0.5f; // How fast the steering wheel turns.
+      public float steeringSpeed = 0.2f; // How fast the steering wheel turns.
       [Space(10)]
       [Range(100, 600)]
       public int brakeForce = 350; // The strength of the wheel brakes.
@@ -168,10 +175,10 @@ public class PrometeoCarController : MonoBehaviour
       carRigidbody = gameObject.GetComponent<Rigidbody>();
       carRigidbody.centerOfMass = bodyMassCenter;
 
-      //Initial setup to calculate the drift value of the car. This part could look a bit
-      //complicated, but do not be afraid, the only thing we're doing here is to save the default
-      //friction values of the car wheels so we can set an appropiate drifting value later.
-      FLwheelFriction = new WheelFrictionCurve ();
+        //Initial setup to calculate the drift value of the car. This part could look a bit
+        //complicated, but do not be afraid, the only thing we're doing here is to save the default
+        //friction values of the car wheels so we can set an appropiate drifting value later.
+        FLwheelFriction = new WheelFrictionCurve ();
         FLwheelFriction.extremumSlip = frontLeftCollider.sidewaysFriction.extremumSlip;
         FLWextremumSlip = frontLeftCollider.sidewaysFriction.extremumSlip;
         FLwheelFriction.extremumValue = frontLeftCollider.sidewaysFriction.extremumValue;
@@ -261,6 +268,23 @@ public class PrometeoCarController : MonoBehaviour
           }
         }
 
+        if (_oscReceiver == null)
+        {
+            _oscReceiver = GetComponent<OSCReceiver>();
+            Debug.Log("OSC Receiver assigned via script.");
+        }
+
+
+        if (_oscReceiver != null)
+        {
+            _oscReceiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleCompassMessage);
+            initialCompassHeading = compassHeading;
+        }
+        
+
+        // Delay calibration by 0.5 seconds
+        Invoke(nameof(CalibrateSteering), 0.5f);
+
     }
 
     // Update is called once per frame
@@ -288,83 +312,7 @@ public class PrometeoCarController : MonoBehaviour
       In this part of the code we specify what the car needs to do if the user presses W (throttle), S (reverse),
       A (turn left), D (turn right) or Space bar (handbrake).
       */
-      if (useTouchControls && touchControlsSetup){
-
-        if(throttlePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoForward();
-        }
-        if(reversePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoReverse();
-        }
-
-        if(turnLeftPTI.buttonPressed){
-          TurnLeft();
-        }
-        if(turnRightPTI.buttonPressed){
-          TurnRight();
-        }
-        if(handbrakePTI.buttonPressed){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          Handbrake();
-        }
-        if(!handbrakePTI.buttonPressed){
-          RecoverTraction();
-        }
-        if((!throttlePTI.buttonPressed && !reversePTI.buttonPressed)){
-          ThrottleOff();
-        }
-        if((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar){
-          InvokeRepeating("DecelerateCar", 0f, 0.1f);
-          deceleratingCar = true;
-        }
-        if(!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f){
-          ResetSteeringAngle();
-        }
-
-      }else{
-
-        //if(Input.GetKey(KeyCode.W)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoForward();
-        //}
-        if(Input.GetKey(KeyCode.S)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          GoReverse();
-        }
-
-        if(Input.GetKey(KeyCode.A)){
-          TurnLeft();
-        }
-        if(Input.GetKey(KeyCode.D)){
-          TurnRight();
-        }
-        if(Input.GetKey(KeyCode.Space)){
-          CancelInvoke("DecelerateCar");
-          deceleratingCar = false;
-          Handbrake();
-        }
-        if(Input.GetKeyUp(KeyCode.Space)){
-          RecoverTraction();
-        }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W))){
-          //ThrottleOff();
-        }
-        if((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)) && !Input.GetKey(KeyCode.Space) && !deceleratingCar){
-          //InvokeRepeating("DecelerateCar", 0f, 0.1f);
-          //deceleratingCar = true;
-        }
-        if(!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f){
-          ResetSteeringAngle();
-        }
-
-      }
+      
 
       // Check if the R key is pressed
         if (Input.GetKeyDown(KeyCode.R))
@@ -372,10 +320,147 @@ public class PrometeoCarController : MonoBehaviour
             RestartGame();
         }
 
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            initialCompassHeading = compassHeading; // Reset the compass calibration
+            Debug.Log("Steering recalibrated.");
+        }
 
-      // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.
-      AnimateWheelMeshes();
+        // Smoothly adjust the steering angle
+        float targetSteeringAngle = Mathf.Clamp((compassHeading - initialCompassHeading) * 0.5f, -maxSteeringAngle, maxSteeringAngle);
+        //steeringAngle = Mathf.Lerp(steeringAngle, targetSteeringAngle, Time.deltaTime * steeringSpeed);
+        steeringAngle = targetSteeringAngle * (-1);
+        carSpeed = carSpeed - Math.Abs(steeringAngle);
 
+        Debug.Log($"Compass: {compassHeading}, Steering_after_Lerp: {steeringAngle}");
+        Debug.Log($"SPEED !!!: {carSpeed}");
+
+
+        // Apply the calculated steering angle to the wheel colliders
+        frontLeftCollider.steerAngle = steeringAngle;
+        frontRightCollider.steerAngle = steeringAngle;
+
+        Debug.Log($"Compass Heading: {compassHeading}, Steering Angle: {steeringAngle}");
+
+        // Debug output to monitor the steering angle
+        Debug.Log($"Smoothed Steering Angle: {steeringAngle}");
+
+        
+
+        if (useTouchControls && touchControlsSetup)
+        {
+
+            if (throttlePTI.buttonPressed)
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                GoForward();
+            }
+            if (reversePTI.buttonPressed)
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                GoReverse();
+            }
+
+            if (turnLeftPTI.buttonPressed)
+            {
+                TurnLeft();
+            }
+            if (turnRightPTI.buttonPressed)
+            {
+                TurnRight();
+            }
+            if (handbrakePTI.buttonPressed)
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                Handbrake();
+            }
+            if (!handbrakePTI.buttonPressed)
+            {
+                RecoverTraction();
+            }
+            if ((!throttlePTI.buttonPressed && !reversePTI.buttonPressed))
+            {
+                ThrottleOff();
+            }
+            if ((!reversePTI.buttonPressed && !throttlePTI.buttonPressed) && !handbrakePTI.buttonPressed && !deceleratingCar)
+            {
+                InvokeRepeating("DecelerateCar", 0f, 0.1f);
+                deceleratingCar = true;
+            }
+            if (!turnLeftPTI.buttonPressed && !turnRightPTI.buttonPressed && steeringAxis != 0f)
+            {
+                ResetSteeringAngle();
+            }
+
+        }
+        else
+        {
+            // ------------------------------------------------ COMPASS ------------------------------------------
+            //if(Input.GetKey(KeyCode.W)){
+            CancelInvoke("DecelerateCar");
+            deceleratingCar = false;
+            if (Math.Abs(steeringAngle) > 6)
+            {
+                GoForward();
+            }
+            else if (Math.Abs(steeringAngle) > 2)
+            {
+                GoForward(2.1f);
+            }
+            else if (Math.Abs(steeringAngle) > 0.8)
+            {
+                GoForward(3);
+            }
+            else {
+                GoForward(5);
+            }
+
+            //}
+            if (Input.GetKey(KeyCode.S))
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                GoReverse();
+            }
+
+            if (Input.GetKey(KeyCode.A))
+            {
+                TurnLeft();
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                TurnRight();
+            }
+            if (Input.GetKey(KeyCode.Space))
+            {
+                CancelInvoke("DecelerateCar");
+                deceleratingCar = false;
+                Handbrake();
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                RecoverTraction();
+            }
+            if ((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)))
+            {
+                //ThrottleOff();
+            }
+            if ((!Input.GetKey(KeyCode.S) && !Input.GetKey(KeyCode.W)) && !Input.GetKey(KeyCode.Space) && !deceleratingCar)
+            {
+                //InvokeRepeating("DecelerateCar", 0f, 0.1f);
+                //deceleratingCar = true;
+            }
+            if (!Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.D) && steeringAxis != 0f)
+            {
+                ResetSteeringAngle();
+            }
+          
+        }
+        // We call the method AnimateWheelMeshes() in order to match the wheel collider movements with the 3D meshes of the wheels.
+        AnimateWheelMeshes();
     }
 
     // Method to restart the game
@@ -383,6 +468,12 @@ public class PrometeoCarController : MonoBehaviour
     {
         // Get the active scene and reload it
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    void CalibrateSteering()
+    {
+        initialCompassHeading = compassHeading; // Set initial compass heading
+        Debug.Log("Steering calibration completed.");
     }
 
     // This method converts the car speed data from float to string, and then set the text of the UI carSpeedText with this value.
@@ -398,6 +489,15 @@ public class PrometeoCarController : MonoBehaviour
       }
 
     }
+
+    private void HandleCompassMessage(OSCMessage message)
+    {
+        if (message.ToFloat(out float value))
+        {
+            compassHeading = value; // Update the current compass heading
+        }
+    }
+
 
     // This method controls the car sounds. For example, the car engine will sound slow when the car speed is low because the
     // pitch of the sound will be at its lowest point. On the other hand, it will sound fast when the car speed is high because
@@ -443,6 +543,7 @@ public class PrometeoCarController : MonoBehaviour
         steeringAxis = -1f;
       }
       var steeringAngle = steeringAxis * maxSteeringAngle;
+        Debug.Log($"steeringAngle LEFT: {steeringAngle}");
       frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
@@ -454,7 +555,8 @@ public class PrometeoCarController : MonoBehaviour
         steeringAxis = 1f;
       }
       var steeringAngle = steeringAxis * maxSteeringAngle;
-      frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
+        Debug.Log($"steeringAngle RIGHT: {steeringAngle}");
+        frontLeftCollider.steerAngle = Mathf.Lerp(frontLeftCollider.steerAngle, steeringAngle, steeringSpeed);
       frontRightCollider.steerAngle = Mathf.Lerp(frontRightCollider.steerAngle, steeringAngle, steeringSpeed);
     }
 
@@ -510,10 +612,13 @@ public class PrometeoCarController : MonoBehaviour
     //
 
     // This method apply positive torque to the wheels in order to go forward.
-    public void GoForward(){
+    public void GoForward(float accMultiplier = 2)
+    {
+
+      accelerationMultiplier = accMultiplier;
       //If the forces aplied to the rigidbody in the 'x' asis are greater than
       //3f, it means that the car is losing traction, then the car will start emitting particle systems.
-      if(Mathf.Abs(localVelocityX) > 2.5f){
+      if (Mathf.Abs(localVelocityX) > 2.5f){
         isDrifting = true;
         DriftCarPS();
       }else{
@@ -533,6 +638,10 @@ public class PrometeoCarController : MonoBehaviour
       }else{
         if(Mathf.RoundToInt(carSpeed) < maxSpeed){
           //Apply positive torque in all wheels to go forward if maxSpeed has not been reached.
+          if(carSpeed < 30)
+          {
+                accelerationMultiplier += 2;
+          }
           frontLeftCollider.brakeTorque = 0;
           frontLeftCollider.motorTorque = (accelerationMultiplier * 50f) * throttleAxis;
           frontRightCollider.brakeTorque = 0;
@@ -550,6 +659,8 @@ public class PrometeoCarController : MonoBehaviour
           rearLeftCollider.motorTorque = 0;
     			rearRightCollider.motorTorque = 0;
     		}
+
+            Debug.Log(frontLeftCollider.motorTorque);
       }
     }
 
