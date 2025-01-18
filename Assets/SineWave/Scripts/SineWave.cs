@@ -16,7 +16,7 @@ public class SineWave : MonoBehaviour
 
     // Drunkenness variables
     public float drunk_level = 1f; // Current drunk level
-    private float target_drunk_level = 1f; // Target drunk level
+    public float target_drunk_level = 1f; // Target drunk level
     private float drunkPhase = 0f; // Phase for oscillation
     public float drunkDecayRate = 0.2f; // How quickly the drunk level decreases over time
     public float drunkBumpAmount = 1f; // How much to increase the target drunk level when P is pressed
