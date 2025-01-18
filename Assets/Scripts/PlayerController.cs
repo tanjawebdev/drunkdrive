@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Microsoft.Unity.VisualStudio.Editor;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using extOSC;
@@ -19,6 +21,8 @@ public class PlayerController : MonoBehaviour
     //public TextMeshProUGUI countText;
     public TextMeshProUGUI winLooseText;
 
+    public UnityEngine.UI.Image windshieldcrack;
+
     private Rigidbody rb;
     [SerializeField] private OSCReceiver _receiver;
 
@@ -27,6 +31,9 @@ public class PlayerController : MonoBehaviour
     //private int count = 0;
     //private int maxCount = 0;
 
+    public AudioSource crashSound; 
+    public AudioSource carIdleSound;
+    private PrometeoCarController carController;
 
     // Start is called before the first frame update
     void Start()
@@ -40,6 +47,20 @@ public class PlayerController : MonoBehaviour
 
         //maxCount = GameObject.FindGameObjectsWithTag("Diamond").Length;
         //SetCountText();
+
+        // Get a reference to the PrometeoCarController
+        carController = GetComponent<PrometeoCarController>();
+
+        // Ensure the idle sound loops
+        if (carIdleSound != null)
+        {
+            carIdleSound.loop = true;
+        }
+
+        if (windshieldcrack != null)
+        {
+            windshieldcrack.gameObject.SetActive(false);
+        }
     }
 
     private void HandleMessage(OSCMessage message)
@@ -62,8 +83,31 @@ public class PlayerController : MonoBehaviour
 
             winLooseText.text = "Oh no! I ran into a tree and died.";
             winLooseText.color = Color.red;
+            
+            // Make the crash image visible
+            if (windshieldcrack != null)
+            {
+                windshieldcrack.gameObject.SetActive(true);
+            }
 
             //Invoke(nameof(BackToMenu), 5f);
+
+            if (crashSound != null)
+            {
+                crashSound.Play();
+            }
+
+            // Mute the car engine sound
+            if (carController != null && carController.carEngineSound != null)
+            {
+                carController.carEngineSound.mute = true;
+            }
+
+            // Play the idle sound
+            if (carIdleSound != null && !carIdleSound.isPlaying)
+            {
+                carIdleSound.Play();
+            }
         }
     }
 
