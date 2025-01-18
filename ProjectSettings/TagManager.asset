@@ -5,8 +5,6 @@ TagManager:
   serializedVersion: 2
   tags:
   - tree
-  - Collider-Death
-  - Collider-Pushable
   layers:
   - Default
   - TransparentFX
