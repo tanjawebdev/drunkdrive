@@ -3992,6 +3992,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree-Collider (127)
       objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
       value: 145.39429
@@ -14631,6 +14635,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree-Collider (123)
       objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
       value: 147.51724
@@ -14926,6 +14934,10 @@ PrefabInstance:
     - target: {fileID: 4033387514446517928, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_Name
       value: Tree-Collider (131)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
@@ -20849,6 +20861,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree-Collider (129)
       objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
       value: 149.17955
@@ -26116,6 +26132,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree-Collider (125)
       objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
       value: 153.7425
@@ -28342,6 +28362,10 @@ PrefabInstance:
     - target: {fileID: 4033387514446517928, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_Name
       value: Tree-Collider (130)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
@@ -63869,6 +63893,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree-Collider (126)
       objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
       value: 159.12598
@@ -77415,6 +77443,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tree-Collider (124)
       objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
       value: 154.97359
@@ -85377,6 +85409,10 @@ PrefabInstance:
     - target: {fileID: 4033387514446517928, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_Name
       value: Tree-Collider (128)
+      objectReference: {fileID: 0}
+    - target: {fileID: 4151095234896584704, guid: 294de43fd44bde248925cb44deb14832, type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8241455847796892999, guid: 294de43fd44bde248925cb44deb14832, type: 3}
       propertyPath: m_LocalPosition.x
