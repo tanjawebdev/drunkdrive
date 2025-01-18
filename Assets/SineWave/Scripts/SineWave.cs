@@ -24,7 +24,7 @@ public class SineWave : MonoBehaviour
     public float drunkIncreaseSpeed = 2f; // Speed at which drunk_level interpolates to target_drunk_level
     public float drunkMaxLevel = 3f; // or whatever upper limit you want
     private float bottleAngle = 0f;
-    private float bottle_tilt;
+    private float bottle_tilt = -1f;
 
     private bool _XAxis;
     public bool XAxis
@@ -101,7 +101,7 @@ public class SineWave : MonoBehaviour
         Amplitude = 0.1f;
         Frequency = 25f;
 
-        _oscReceiver.Bind("/ZIGSIM/tanjasPhone/gravity", HandleGravityMessage);
+        _oscReceiver.Bind("/ZIGSIM/beer/gravity", HandleGravityMessage);
     }
 
     void Update()
@@ -113,7 +113,6 @@ public class SineWave : MonoBehaviour
             target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
         }
 
-        // help was soll man für einen sensor nehmen?
         if (bottle_tilt >= -0.5f)
         {
             target_drunk_level += drunkBumpAmount * 0.01f;

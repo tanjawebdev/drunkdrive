@@ -276,7 +276,7 @@ public class PrometeoCarController : MonoBehaviour
 
         if (_oscReceiver != null)
         {
-            _oscReceiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleCompassMessage);
+            _oscReceiver.Bind("/ZIGSIM/car/compass", HandleCompassMessage);
             initialCompassHeading = compassHeading;
         }
         
