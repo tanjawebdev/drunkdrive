@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 2
   tags:
   - tree
+  - finishline
+  - goal
   layers:
   - Default
   - TransparentFX
