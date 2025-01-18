@@ -56,11 +56,14 @@ public class Menu : MonoBehaviour
             yield return new WaitForSeconds(blinkInterval);
         }
     }
-    public void OnPlayButton() {
-        SceneManager.LoadScene(1);
-    }
 
     public void OnQuitButton() {
         Application.Quit();
+    }
+
+    private void Update() {
+        if (Input.GetKeyDown(KeyCode.P)){
+            SceneManager.LoadScene(1);
+        }
     }
 }
