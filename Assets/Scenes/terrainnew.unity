@@ -520,7 +520,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 1
   winLooseText: {fileID: 2016200643}
-<<<<<<< HEAD
   _receiver: {fileID: 327915507}
 --- !u!114 &327915507
 MonoBehaviour:
