@@ -14,9 +14,6 @@ public class SineWave : MonoBehaviour
     public Shader SineWaveShader;
     private Material mat;
 
-    //reference drunk level text
-    public Text Drunk_Level_Text;
-
     // Drunkenness variables
     public float drunk_level = 1f; // Current drunk level
     public float target_drunk_level = 1f; // Target drunk level
@@ -163,8 +160,6 @@ public class SineWave : MonoBehaviour
 
         // Optional: Add a subtle vertical wobble for extra effect
         VerticalOffset = Mathf.Cos(drunkPhase * 0.7f) * drunk_level * 0.05f;
-
-        Drunk_Level_Text.text = drunk_level.ToString("F2");
 
         //Handle Drunk_Slider
         if (drunk_slider != null)
