@@ -131,6 +131,8 @@ public class PlayerController : MonoBehaviour
 
                 // or write to your own JSON file, etc.
             }
+
+            StartCoroutine(LoadSceneWithDelay(10f, 0));
         }
     }
 

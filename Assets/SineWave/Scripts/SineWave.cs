@@ -11,6 +11,7 @@ public class SineWave : MonoBehaviour
     [SerializeField] private OSCReceiver _oscReceiver; // OSC Receiver for ZigSim
     private float totalDrunkness = 0f;
     private float totalTime = 0f;
+    public Text Drunk_Level_Text;
 
     // Shader and Material
     public Shader SineWaveShader;
