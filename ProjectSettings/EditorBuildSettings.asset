@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Startscreen.unity
     guid: 5e219e8225c0f4f57a8e47d7886f0290
   - enabled: 1
-    path: Assets/Scenes/terrainnew.unity
-    guid: 92c3c629e19a048d1b8f49c8eb6e3142
+    path: Assets/Scenes/driving-scene.unity
+    guid: 3196189508a384a369f287be167d93e6
   m_configObjects: {}
