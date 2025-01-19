@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using extOSC;
@@ -11,8 +12,12 @@ public class PlayerController : MonoBehaviour
     public float speed = 1.0f;
 
     public TextMeshProUGUI winLooseText;
+    public UnityEngine.UI.Image windshieldcrack;
 
     private Rigidbody rb;
+    public AudioSource crashSound; 
+    public AudioSource carIdleSound;
+    private PrometeoCarController carController;
     [SerializeField] private OSCReceiver _receiver;
 
     public Transform cameraTransform; // Reference to the camera's Transform
@@ -28,9 +33,16 @@ public class PlayerController : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
 
+        carController = GetComponent<PrometeoCarController>();
+
         if (_receiver != null)
         {
             _receiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleMessage);
+        }
+
+        if (windshieldcrack != null)
+        {
+            windshieldcrack.gameObject.SetActive(false);
         }
 
         // Store the original parent of the camera (which is the player)
@@ -53,13 +65,38 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("tree"))
+        if (other.gameObject.CompareTag("Collider-Death"))
         {
             // Handle tree collision (optional code removed)
             rb.isKinematic = true;
             winLooseText.text = "Oh no! I ran into a tree and died.";
             winLooseText.color = Color.red;
         }
+
+        // Make the crash image visible
+            if (windshieldcrack != null)
+            {
+                windshieldcrack.gameObject.SetActive(true);
+            }
+
+            //Invoke(nameof(BackToMenu), 5f);
+
+            if (crashSound != null)
+            {
+                crashSound.Play();
+            }
+
+            // Mute the car engine sound
+            if (carController != null && carController.carEngineSound != null)
+            {
+                carController.carEngineSound.mute = true;
+            }
+
+            // Play the idle sound
+            if (carIdleSound != null && !carIdleSound.isPlaying)
+            {
+                carIdleSound.Play();
+            }
 
         if (other.gameObject.CompareTag("finishline"))
         {
