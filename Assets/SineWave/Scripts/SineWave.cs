@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using extOSC;
@@ -9,6 +9,8 @@ public class SineWave : MonoBehaviour
 {
     #region Variables
     [SerializeField] private OSCReceiver _oscReceiver; // OSC Receiver for ZigSim
+    private float totalDrunkness = 0f;
+    private float totalTime = 0f;
 
     // Shader and Material
     public Shader SineWaveShader;
@@ -161,6 +163,11 @@ public class SineWave : MonoBehaviour
         // Optional: Add a subtle vertical wobble for extra effect
         VerticalOffset = Mathf.Cos(drunkPhase * 0.7f) * drunk_level * 0.05f;
 
+        // Accumulate for average
+        totalDrunkness += drunk_level * Time.deltaTime;
+        totalTime += Time.deltaTime;
+
+        Drunk_Level_Text.text = drunk_level.ToString("F2");
         //Handle Drunk_Slider
         if (drunk_slider != null)
         {
@@ -262,6 +269,16 @@ public class SineWave : MonoBehaviour
         }
 
         Graphics.Blit(src, dest, mat);
+    }
+
+
+    // Provide a method to get the average drunkness
+    public float GetAverageDrunkness()
+    {
+        if (totalTime > 0f)
+            return totalDrunkness / totalTime;
+        else
+            return 0f;
     }
 
     #endregion

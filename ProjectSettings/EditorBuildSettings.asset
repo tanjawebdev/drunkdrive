@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/Scenes/Startscreen.unity
     guid: 5e219e8225c0f4f57a8e47d7886f0290
   - enabled: 1
-    path: Assets/Scenes/driving-scene.unity
-    guid: 3196189508a384a369f287be167d93e6
+    path: Assets/Scenes/tanja-driving-scene.unity
+    guid: 404cf4e6e864243f9add62d6f321f5e5
   m_configObjects: {}

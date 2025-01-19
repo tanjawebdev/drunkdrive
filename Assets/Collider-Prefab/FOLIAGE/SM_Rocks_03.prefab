@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 7893785750660969085}
   - component: {fileID: 7304924561307935038}
   - component: {fileID: -5917951179465730322}
+  - component: {fileID: 7169273851430969546}
   m_Layer: 0
   m_Name: SM_Rocks_03
   m_TagString: Collider-Death
@@ -107,6 +108,28 @@ BoxCollider:
   m_Size: {x: 0.57544214, y: 0.7392076, z: 0.5109899}
   m_Center: {x: 0.016663522, y: 0.3411801, z: 0.00023694336}
 --- !u!64 &-5917951179465730322
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2290846898853941114}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3435312251901772053, guid: d74aff6b5ff331e4fbeff2c6ee6abd85, type: 3}
+--- !u!64 &7169273851430969546
 MeshCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

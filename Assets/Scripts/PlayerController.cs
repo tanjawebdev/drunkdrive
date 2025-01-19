@@ -6,13 +6,19 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using extOSC;
+using UnityEngine.SocialPlatforms.Impl;
+using Unity.VisualScripting;
+using UnityEngine.TestTools;
 
 public class PlayerController : MonoBehaviour
 {
     public float speed = 1.0f;
 
     public TextMeshProUGUI winLooseText;
-    public UnityEngine.UI.Image windshieldcrack;
+    public TextMeshProUGUI playerScoreText;
+    public GameObject finalOverlay;
+    public GameObject carFire;
+    public HighscoreTable highscoreTable;
 
     private Rigidbody rb;
     public AudioSource crashSound; 
@@ -40,11 +46,6 @@ public class PlayerController : MonoBehaviour
             _receiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleMessage);
         }
 
-        if (windshieldcrack != null)
-        {
-            windshieldcrack.gameObject.SetActive(false);
-        }
-
         // Store the original parent of the camera (which is the player)
         originalCameraParent = cameraTransform.parent;
 
@@ -65,18 +66,11 @@ public class PlayerController : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.CompareTag("Collider-Death"))
+        if (other.gameObject.CompareTag("Collider-Death") || other.gameObject.CompareTag("Collider-Pushable"))
         {
             // Handle tree collision (optional code removed)
             rb.isKinematic = true;
-            winLooseText.text = "Oh no! I ran into a tree and died.";
-            winLooseText.color = Color.red;
 
-            // Make the crash image visible
-            if (windshieldcrack != null)
-            {
-                windshieldcrack.gameObject.SetActive(true);
-            }
 
             //Invoke(nameof(BackToMenu), 5f);
 
@@ -96,17 +90,47 @@ public class PlayerController : MonoBehaviour
             {
                 carIdleSound.Play();
             }
+
+            highscoreTable.DisplayTop5();
+
+            if (finalOverlay != null)
+            {
+                finalOverlay.SetActive(true);
+            }
+
+            if (carFire != null)
+            {
+                carFire.SetActive(true);
+            }
+
+            // Start coroutine to load the scene after a delay
+            StartCoroutine(LoadSceneWithDelay(10f, 0));
         }
 
         if (other.gameObject.CompareTag("finishline"))
         {
+            if (finalOverlay != null)
+            {
+                finalOverlay.SetActive(true);
+            }
             StartCoroutine(MoveCameraToThirdPerson());
-        }
-
-        if (other.gameObject.CompareTag("goal"))
-        {
-            winLooseText.text = "WINNER";
+            winLooseText.text = "YOU WIN";
             winLooseText.color = Color.green;
+
+            float averageDrunkness = sineWave.GetAverageDrunkness();
+            playerScoreText.text = "Your average\npromille: " + averageDrunkness.ToString("F2");
+
+            //Store in your high score / results
+            GameIdManager gameIdManager = FindObjectOfType<GameIdManager>();
+
+            if (gameIdManager != null)
+            {
+                int currentGameId = gameIdManager.GetCurrentGameId();
+                // Add to high score results
+                highscoreTable.AddHighscoreEntry(currentGameId, averageDrunkness);
+
+                // or write to your own JSON file, etc.
+            }
         }
     }
 
@@ -155,5 +179,11 @@ public class PlayerController : MonoBehaviour
     private void BackToMenu()
     {
         SceneManager.LoadScene(0);
+    }
+
+    private IEnumerator LoadSceneWithDelay(float delay, int sceneIndex)
+    {
+        yield return new WaitForSeconds(delay); // Wait for the specified delay
+        SceneManager.LoadScene(sceneIndex);     // Load the specified scene
     }
 }
