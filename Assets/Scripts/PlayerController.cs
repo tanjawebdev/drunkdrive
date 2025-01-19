@@ -34,6 +34,9 @@ public class PlayerController : MonoBehaviour
     private Transform originalCameraParent; // Store the original parent of the camera
     private DriverHeadMotion driverHeadMotion; // Reference to the Driver Head Motion component
     private SineWave sineWave; // Reference to the SineWave component
+    public GameObject Interior_UI;
+    public GameObject Drunk_Slider;
+    public GameObject Speed_Text;
 
     void Start()
     {
@@ -113,6 +116,19 @@ public class PlayerController : MonoBehaviour
             {
                 finalOverlay.SetActive(true);
             }
+            if (Interior_UI != null)
+            {
+                Interior_UI.SetActive(false);
+            }
+            if (Drunk_Slider != null)
+            {
+                Drunk_Slider.SetActive(false);
+            }
+            if (Speed_Text != null)
+            {
+                Speed_Text.SetActive(false);
+            }
+            
             StartCoroutine(MoveCameraToThirdPerson());
             winLooseText.text = "YOU WIN";
             winLooseText.color = Color.green;
@@ -133,6 +149,11 @@ public class PlayerController : MonoBehaviour
             }
 
             StartCoroutine(LoadSceneWithDelay(10f, 0));
+        }
+
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            rb.isKinematic = true;
         }
     }
 
