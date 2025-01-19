@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6014392070529182565}
   - component: {fileID: 922106327154816641}
   m_Layer: 0
-  m_Name: road_barrier_concrete
+  m_Name: road_barrier_concrete_Collison
   m_TagString: Collider-Death
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
