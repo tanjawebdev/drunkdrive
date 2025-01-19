@@ -71,9 +71,8 @@ public class PlayerController : MonoBehaviour
             rb.isKinematic = true;
             winLooseText.text = "Oh no! I ran into a tree and died.";
             winLooseText.color = Color.red;
-        }
 
-        // Make the crash image visible
+            // Make the crash image visible
             if (windshieldcrack != null)
             {
                 windshieldcrack.gameObject.SetActive(true);
@@ -97,6 +96,7 @@ public class PlayerController : MonoBehaviour
             {
                 carIdleSound.Play();
             }
+        }
 
         if (other.gameObject.CompareTag("finishline"))
         {
