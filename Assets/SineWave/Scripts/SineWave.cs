@@ -1,6 +1,9 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 using extOSC;
+using System;
+using System.Runtime.CompilerServices;
 
 public class SineWave : MonoBehaviour
 {
@@ -25,6 +28,16 @@ public class SineWave : MonoBehaviour
     public float drunkMaxLevel = 3f; // or whatever upper limit you want
     private float bottleAngle = 0f;
     private float bottle_tilt = -1f;
+    public Slider drunk_slider;
+    public Image fillImage;
+    public Image sliderbackground;
+    public Color flashColor = Color.red;
+    public float flashSpeed = 2f;
+    private float timeAtZeroDrunkness = 0f;
+    private bool isFlashing = false;
+    private bool DrunknessLocked = false;
+    public AudioSource sober_regret_sound;
+    private bool sober_gameover_finished = false;
 
     private bool _XAxis;
     public bool XAxis
@@ -106,17 +119,26 @@ public class SineWave : MonoBehaviour
 
     void Update()
     {
-        // Handle input to increase the target drunk_level
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            target_drunk_level += drunkBumpAmount;
-            target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
+        if(DrunknessLocked){
+            drunk_level = 0;
         }
+        else {
+            // Handle input to increase the target drunk_level
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                target_drunk_level += drunkBumpAmount;
+                target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
+            }
 
-        if (bottle_tilt >= -0.5f)
-        {
-            target_drunk_level += drunkBumpAmount * 0.01f;
-            target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
+            if (Input.GetKeyDown(KeyCode.M)){
+                sober_regret_sound.Play();
+            }
+
+            if (bottle_tilt >= -0.5f)
+            {
+                target_drunk_level += drunkBumpAmount * 0.01f;
+                target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
+            }
         }
 
         // Gradually interpolate drunk_level toward target_drunk_level
@@ -144,6 +166,92 @@ public class SineWave : MonoBehaviour
 
         Drunk_Level_Text.text = drunk_level.ToString("F2");
 
+        //Handle Drunk_Slider
+        if (drunk_slider != null)
+        {
+            drunk_slider.value = drunk_level;
+
+            // Update the bar's color dynamically
+            if (fillImage != null)
+            {
+                float t = drunk_level / drunkMaxLevel; // Normalize drunkness level
+                fillImage.color = Color.Lerp(Color.red, Color.green, t);
+            }
+
+            // Handle flashing when drunkness is 0
+            if (drunk_level <= 0.1)
+            {
+                if (!isFlashing)
+                {
+                    isFlashing = true;
+                    timeAtZeroDrunkness = 0f; // Reset timer
+                }
+
+                FlashSlider();
+
+                // Increment timer
+                timeAtZeroDrunkness += Time.deltaTime;
+
+                // Check if it has been at 0 for more than 5 seconds
+                if (timeAtZeroDrunkness > 5f)
+                {
+                    Brakes();
+                    DrunknessLocked = true;
+                }
+            }
+            else
+            {
+                isFlashing = false;
+                timeAtZeroDrunkness = 0f; // Reset timer
+                if (sliderbackground != null)
+                {
+                    sliderbackground.color = new Color(85/255f, 51/255f, 0f, 0f); // Reset color to default (e.g., green)
+                }
+            }
+        }
+    }
+
+    // Flash the slider fill color
+    private void FlashSlider()
+    {
+        if (sliderbackground != null)
+        {
+            float t = Mathf.Abs(Mathf.Sin(Time.time * flashSpeed)); // Calculate flashing effect
+            sliderbackground.color = Color.Lerp(new Color(85/255f, 51/255f, 0f, 0f), flashColor, t);
+        }
+    }
+
+    // Set the target speed in the PlayerController script
+    private void Brakes()
+    {
+        PrometeoCarController prometeoController = GetComponentInParent<PrometeoCarController>();
+        PlayerController playerController = GetComponentInParent<PlayerController>();
+        if (prometeoController != null)
+        {
+            prometeoController.Brakes();
+            
+            if(prometeoController.carSpeed <= 0.1f){
+                playerController.winLooseText.text = "You sobered up";
+                playerController.winLooseText.color = Color.red;
+                StartCoroutine(FadeOutAudio(prometeoController.carEngineSound,50f)); // Fades out over 2 seconds
+                if (!sober_gameover_finished){
+                    sober_regret_sound.Play();
+                    Debug.Log("Sober Gameover");
+                    sober_gameover_finished = true;
+                }
+            }
+        }
+    }
+
+    private IEnumerator FadeOutAudio(AudioSource audioSource, float duration)
+    {
+        float startVolume = audioSource.volume;
+
+        while (audioSource.volume > 0.3)
+        {
+            audioSource.volume -= startVolume * Time.deltaTime / duration;
+            yield return null;
+        }
     }
 
     private void HandleGravityMessage(OSCMessage message)
