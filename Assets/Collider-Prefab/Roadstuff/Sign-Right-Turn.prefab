@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 8057601464655889240}
   - component: {fileID: 4998071606389968070}
   m_Layer: 0
-  m_Name: No_right_sharp_turn.008
+  m_Name: Sign-Right-Turn
   m_TagString: Collider-Pushable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
