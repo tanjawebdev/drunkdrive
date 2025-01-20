@@ -3,17 +3,21 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using extOSC;
 
 public class Menu : MonoBehaviour
 {
     public TextMeshProUGUI blinkingtext; // For TextMeshPro
     // public UnityEngine.UI.Text text; // Use this if you're using regular UI Text
 
+    [SerializeField] private OSCReceiver _oscReceiver; // OSC Receiver for ZigSim
+
     public float blinkInterval = 0.5f; // Time between blinks
     public Animator animator; // Reference to the Animator
     public string stateName;  // Name of the animation state in Animator
     public float interval = 4f; // Time in seconds between triggers
     public AudioSource drinking_sound;
+    private float bottle_tilt = -1f;
 
     private void Start()
     {
@@ -34,8 +38,7 @@ public class Menu : MonoBehaviour
         StartCoroutine(BlinkText());
 
         InvokeRepeating(nameof(TriggerAnimation), interval, interval);
-
-        
+         _oscReceiver.Bind("/ZIGSIM/beer/gravity", HandleGravityMessage);
     }
 
     private void TriggerAnimation(){
@@ -62,8 +65,13 @@ public class Menu : MonoBehaviour
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.P)){
+        if (Input.GetKeyDown(KeyCode.P) || bottle_tilt >= -0.5f){
             SceneManager.LoadScene(1);
         }
+    }
+
+    private void HandleGravityMessage(OSCMessage message)
+    {
+        bottle_tilt = message.Values[1].FloatValue;
     }
 }

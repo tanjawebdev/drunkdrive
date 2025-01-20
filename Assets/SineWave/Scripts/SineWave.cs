@@ -12,6 +12,7 @@ public class SineWave : MonoBehaviour
     private float totalDrunkness = 0f;
     private float totalTime = 0f;
     public Text Drunk_Level_Text;
+    public HighscoreTable highscoreTable;
 
     // Shader and Material
     public Shader SineWaveShader;
@@ -239,8 +240,14 @@ public class SineWave : MonoBehaviour
                 StartCoroutine(FadeOutAudio(prometeoController.carEngineSound,50f)); // Fades out over 2 seconds
                 if (!sober_gameover_finished){
                     sober_regret_sound.Play();
-                    Debug.Log("Sober Gameover");
-                    sober_gameover_finished = true;
+                   Debug.Log("Sober Gameover");
+                   highscoreTable.DisplayTop5();
+                   if (playerController.finalOverlay != null)
+                   {
+                       playerController.finalOverlay.SetActive(true);
+                   }
+                   StartCoroutine(playerController.LoadSceneWithDelay(10f, 0));
+                   sober_gameover_finished = true;
                 }
             }
         }
@@ -259,6 +266,8 @@ public class SineWave : MonoBehaviour
 
     private void HandleGravityMessage(OSCMessage message)
     {
+
+        Debug.Log(bottle_tilt);
         bottle_tilt = message.Values[1].FloatValue;
     }
 

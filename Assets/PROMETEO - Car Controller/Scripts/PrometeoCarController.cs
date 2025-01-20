@@ -328,7 +328,7 @@ public class PrometeoCarController : MonoBehaviour
         // Smoothly adjust the steering angle
         float targetSteeringAngle = Mathf.Clamp((compassHeading - initialCompassHeading) * 0.5f, -maxSteeringAngle, maxSteeringAngle);
         //steeringAngle = Mathf.Lerp(steeringAngle, targetSteeringAngle, Time.deltaTime * steeringSpeed);
-        steeringAngle = targetSteeringAngle * (-1);
+        steeringAngle = targetSteeringAngle;
         carSpeed = carSpeed - Math.Abs(steeringAngle);
 
         //Debug.Log($"SPEED !!!: {carSpeed}");

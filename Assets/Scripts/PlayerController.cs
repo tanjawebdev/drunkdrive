@@ -9,6 +9,8 @@ using extOSC;
 using UnityEngine.SocialPlatforms.Impl;
 using Unity.VisualScripting;
 using UnityEngine.TestTools;
+using System;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -37,6 +39,11 @@ public class PlayerController : MonoBehaviour
     public GameObject Interior_UI;
     public GameObject Drunk_Slider;
     public GameObject Speed_Text;
+    private bool DrunkLock = false;
+    private float speedBelowThresholdTime = 0f; // Tracks how long the car's speed is < 5
+    private float speedCheckThreshold = 3f; 
+    public UnityEngine.UI.Image windshielcrack;
+    public AudioSource radio;
 
     void Start()
     {
@@ -49,6 +56,11 @@ public class PlayerController : MonoBehaviour
             _receiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleMessage);
         }
 
+        if (windshielcrack != null)
+        {
+            windshielcrack.enabled = false;
+        }
+
         // Store the original parent of the camera (which is the player)
         originalCameraParent = cameraTransform.parent;
 
@@ -57,6 +69,36 @@ public class PlayerController : MonoBehaviour
 
         // Find the SineWave component on the same object or camera (adjust as needed)
         sineWave = cameraTransform.GetComponent<SineWave>();
+    }
+
+    void Update() 
+    {
+        if (DrunkLock) 
+        {
+            sineWave.drunk_level = 0.1f;
+        }
+
+        if (carController.carSpeed < 6)
+        {
+            // Increment the timer if the condition is true
+            speedBelowThresholdTime += Time.deltaTime;
+
+            // Trigger the condition only if the speed is < 5 for longer than the threshold
+            if (speedBelowThresholdTime >= speedCheckThreshold)
+            {
+                highscoreTable.DisplayTop5();
+
+                if (finalOverlay != null)
+                {
+                    finalOverlay.SetActive(true);
+                }
+                StartCoroutine(LoadSceneWithDelay(10f, 0));
+            }
+        }
+        else
+        {
+            speedBelowThresholdTime = 0f;
+        }
     }
 
     private void HandleMessage(OSCMessage message)
@@ -79,7 +121,14 @@ public class PlayerController : MonoBehaviour
 
             if (crashSound != null)
             {
+                SineWave sinewave = GetComponentInChildren<SineWave>();
                 crashSound.Play();
+                DrunkLock = true;
+            }
+
+            if (radio != null)
+            {
+                radio.pitch = 0.83f;
             }
 
             // Mute the car engine sound
@@ -92,6 +141,11 @@ public class PlayerController : MonoBehaviour
             if (carIdleSound != null && !carIdleSound.isPlaying)
             {
                 carIdleSound.Play();
+            }
+
+            if (windshielcrack != null)
+            {
+                windshielcrack.enabled = true;
             }
 
             highscoreTable.DisplayTop5();
@@ -112,10 +166,6 @@ public class PlayerController : MonoBehaviour
 
         if (other.gameObject.CompareTag("finishline"))
         {
-            if (finalOverlay != null)
-            {
-                finalOverlay.SetActive(true);
-            }
             if (Interior_UI != null)
             {
                 Interior_UI.SetActive(false);
@@ -130,6 +180,25 @@ public class PlayerController : MonoBehaviour
             }
             
             StartCoroutine(MoveCameraToThirdPerson());
+        }
+
+        if (other.gameObject.CompareTag("Finish"))
+        {
+            if (finalOverlay != null)
+            {
+                finalOverlay.SetActive(true);
+            }
+            if (crashSound != null)
+            {
+                crashSound.Play();
+            }
+            if (carFire != null)
+            {
+                carFire.SetActive(true);
+            }
+
+            rb.isKinematic = true;
+
             winLooseText.text = "YOU WIN";
             winLooseText.color = Color.green;
 
@@ -149,11 +218,6 @@ public class PlayerController : MonoBehaviour
             }
 
             StartCoroutine(LoadSceneWithDelay(10f, 0));
-        }
-
-        if (other.gameObject.CompareTag("Finish"))
-        {
-            rb.isKinematic = true;
         }
     }
 
@@ -204,7 +268,7 @@ public class PlayerController : MonoBehaviour
         SceneManager.LoadScene(0);
     }
 
-    private IEnumerator LoadSceneWithDelay(float delay, int sceneIndex)
+    public IEnumerator LoadSceneWithDelay(float delay, int sceneIndex)
     {
         yield return new WaitForSeconds(delay); // Wait for the specified delay
         SceneManager.LoadScene(sceneIndex);     // Load the specified scene
