@@ -44,6 +44,7 @@ public class PlayerController : MonoBehaviour
     private float speedCheckThreshold = 3f; 
     public UnityEngine.UI.Image windshielcrack;
     public AudioSource radio;
+    public AudioSource explosion;
 
     void Start()
     {
@@ -195,6 +196,10 @@ public class PlayerController : MonoBehaviour
             if (carFire != null)
             {
                 carFire.SetActive(true);
+            }
+            if (explosion != null)
+            {
+                explosion.Play();
             }
 
             rb.isKinematic = true;

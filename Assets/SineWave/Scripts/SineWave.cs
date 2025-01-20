@@ -39,6 +39,7 @@ public class SineWave : MonoBehaviour
     private bool DrunknessLocked = false;
     public AudioSource sober_regret_sound;
     private bool sober_gameover_finished = false;
+    public AudioSource Gulp;
 
     private bool _XAxis;
     public bool XAxis
@@ -139,6 +140,18 @@ public class SineWave : MonoBehaviour
             {
                 target_drunk_level += drunkBumpAmount * 0.01f;
                 target_drunk_level = Mathf.Clamp(target_drunk_level, drunkMinLevel, drunkMaxLevel);
+                if (!Gulp.isPlaying)
+                {
+                    Gulp.Play();
+                }
+            }
+            else
+            {
+                // Stop the sound if the bottle_tilt is below the threshold
+                if (Gulp.isPlaying)
+                {
+                    Gulp.Stop();
+                }
             }
         }
 
@@ -240,14 +253,18 @@ public class SineWave : MonoBehaviour
                 StartCoroutine(FadeOutAudio(prometeoController.carEngineSound,50f)); // Fades out over 2 seconds
                 if (!sober_gameover_finished){
                     sober_regret_sound.Play();
-                   Debug.Log("Sober Gameover");
-                   highscoreTable.DisplayTop5();
-                   if (playerController.finalOverlay != null)
-                   {
-                       playerController.finalOverlay.SetActive(true);
-                   }
-                   StartCoroutine(playerController.LoadSceneWithDelay(10f, 0));
-                   sober_gameover_finished = true;
+                    Debug.Log("Sober Gameover");
+                    highscoreTable.DisplayTop5();
+                    if (playerController.finalOverlay != null)
+                    {
+                        playerController.finalOverlay.SetActive(true);
+                    }
+                    if(playerController.radio != null)
+                    {
+                        playerController.radio.pitch = 0.83f;
+                    }
+                    StartCoroutine(playerController.LoadSceneWithDelay(10f, 0));
+                    sober_gameover_finished = true;
                 }
             }
         }

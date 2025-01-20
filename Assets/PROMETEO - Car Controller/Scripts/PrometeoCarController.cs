@@ -284,6 +284,10 @@ public class PrometeoCarController : MonoBehaviour
         // Delay calibration by 0.5 seconds
         Invoke(nameof(CalibrateSteering), 0.5f);
 
+        // Load the max speed value from PlayerPrefs
+        maxSpeed = PlayerPrefs.GetInt("MaxSpeed", 50); // Default is 50 if not set
+        Debug.Log("Max Speed Loaded: " + maxSpeed);
+
     }
 
     // Update is called once per frame

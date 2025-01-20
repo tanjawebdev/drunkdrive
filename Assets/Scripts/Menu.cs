@@ -7,7 +7,7 @@ using extOSC;
 
 public class Menu : MonoBehaviour
 {
-    public TextMeshProUGUI blinkingtext; // For TextMeshPro
+    public GameObject blinkingtext; // For TextMeshPro
     // public UnityEngine.UI.Text text; // Use this if you're using regular UI Text
 
     [SerializeField] private OSCReceiver _oscReceiver; // OSC Receiver for ZigSim
@@ -21,11 +21,6 @@ public class Menu : MonoBehaviour
 
     private void Start()
     {
-        if (blinkingtext == null)
-        {
-            blinkingtext = GetComponent<TextMeshProUGUI>(); // Automatically assign if not set
-        }
-
         if (animator == null)
         {
             animator = GetComponent<Animator>();
@@ -55,7 +50,8 @@ public class Menu : MonoBehaviour
     {
         while (true)
         {
-            blinkingtext.enabled = !blinkingtext.enabled; // Toggle visibility
+            bool isActive = blinkingtext.activeSelf; // Check current state
+            blinkingtext.SetActive(!isActive);  // Toggle visibility
             yield return new WaitForSeconds(blinkInterval);
         }
     }
