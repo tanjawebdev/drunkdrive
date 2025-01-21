@@ -52,11 +52,6 @@ public class PlayerController : MonoBehaviour
 
         carController = GetComponent<PrometeoCarController>();
 
-        if (_receiver != null)
-        {
-            _receiver.Bind("/ZIGSIM/tanjasPhone/compass", HandleMessage);
-        }
-
         if (windshielcrack != null)
         {
             windshielcrack.enabled = false;
@@ -99,14 +94,6 @@ public class PlayerController : MonoBehaviour
         else
         {
             speedBelowThresholdTime = 0f;
-        }
-    }
-
-    private void HandleMessage(OSCMessage message)
-    {
-        if (message.ToFloat(out float value))
-        {
-            Debug.Log($"Received value: {value}");
         }
     }
 

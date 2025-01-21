@@ -11918,7 +11918,7 @@ MonoBehaviour:
   m_MinValue: 40
   m_MaxValue: 100
   m_WholeNumbers: 1
-  m_Value: 40
+  m_Value: 52
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls: []
@@ -35053,7 +35053,7 @@ MonoBehaviour:
   _workInEditor: 0
   _localHostMode: 0
   _localHost: 172.20.10.2
-  _localPort: 7002
+  _localPort: 7001
 --- !u!114 &1917347707
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -35068,6 +35068,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speedSlider: {fileID: 678711268}
   speedValueText: {fileID: 1421340841}
+  _receiver: {fileID: 1917347706}
 --- !u!1 &1925759926
 GameObject:
   m_ObjectHideFlags: 0
