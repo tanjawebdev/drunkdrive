@@ -196,7 +196,7 @@ public class SineWave : MonoBehaviour
             }
 
             // Handle flashing when drunkness is 0
-            if (drunk_level <= 0.1)
+            if (drunk_level <= 0.6)
             {
                 if (!isFlashing)
                 {
